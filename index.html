@@ -1,0 +1,52 @@
+<html>
+
+<head>
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+
+</head>
+<body>
+    <h1> Image Comparison Service</h1>
+
+<label for="imageId-1">Image ID 1</label>
+<input type="text" id="imageId-1" name="imageId-1" placeholder="Grid ID"/>
+
+
+<div class="row">
+    <div class="col s6">
+        <input type="numeric" id="dpr-left" name="dpr-1" placeholder="DPR"/> 
+        <input type="numeric" id="quality-left" name="quality-1" placeholder="Quality"/> 
+    </div>
+    <div class="col s6">
+        <input type="numeric" id="dpr-right" name="dpr-2" placeholder="DPR"/>
+        <input type="numeric" id="quality-right" name="quality-1" placeholder="Quality"/> </div>
+</div>
+
+
+<div class="row">
+    <div class="col s6">
+        <div id="left"></div>
+    </div>
+      <div class="col s6">
+        <div id="right"></div>
+    </div>
+</div>
+
+<script id="imageList" type="text/x-handlebars-template">
+{{#each images}}
+    <p>File size: {{this.size}}kb</p>
+    <img class="responsive-img" src="{{this.url}}" />
+    {{/each}}
+</script>
+
+
+ <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="config.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>
