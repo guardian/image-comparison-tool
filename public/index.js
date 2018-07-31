@@ -7,6 +7,9 @@ function signImgIx(path) {
 const hostRadiosLeft = document.getElementsByName("originHost-left");
 const hostRadiosRight = document.getElementsByName("originHost-right");
 
+
+const  isChrome = !!window.chrome && !!window.chrome.webstore;
+
 function switchOnHost(imgixValue, fastlyValue) {
     return {
         left: hostRadiosLeft[0].checked ? imgixValue : fastlyValue,
@@ -27,13 +30,17 @@ function qualityParam() {
 }
 
 function autoFormatValue() {
-    return switchOnHost("format", "webp")
+    return switchOnHost("format", "webp");
+}
+
+function forceWebPParams() {
+    return isChrome ? "&fm=webp&format=webp" : "";
 }
 
 function buildUrl(path, listId, params, width) {
     const dpr = params[`dpr-${listId}`];
     const quality = params[`quality-${listId}`];
-    const queryString = `?${widthParam()[listId]}=${width}&dpr=${dpr}&${qualityParam()[listId]}=${quality}&auto=${autoFormatValue()}`;
+    const queryString = `?${widthParam()[listId]}=${width}&dpr=${dpr}&${qualityParam()[listId]}=${quality}&auto=${autoFormatValue()[listId]}${forceWebPParams()}`;
     const combined = `${path}${queryString}`
     const imgIxHash = signImgIx(combined);
     return `${getHost()[listId]}${path}${queryString}&s=${imgIxHash}`
@@ -72,6 +79,13 @@ function paramsToQuerySting() {
     }
 }
 
+function extractLengthAndType(response) {
+    return {
+        imageType: response.headers.get("content-type"),
+        length: response.headers.get("content-length")
+        }
+}
+
 function updateList(listId, newParams) {
     const listToUpdate = document.getElementById(listId)
     const source   = document.getElementById("imageList").innerHTML;
@@ -85,18 +99,18 @@ function updateList(listId, newParams) {
     });
     const sizes = Promise.all(newUrls.map(urls => {
         return Promise.all([
-            fetch(urls.normal).then(response => response.headers.get("content-length")),
-            fetch(urls.thumbnail).then(response => response.headers.get("content-length"))
+            fetch(urls.normal).then(extractLengthAndType),
+            fetch(urls.thumbnail).then(extractLengthAndType)
         ])
         }))
         .then((imageSizes)=> {
             const combined = newUrls.map((urls,i) => {
                 return {
                     normal: {
-                        url: urls.normal, size: convertToKb(imageSizes[i][0])
+                        url: urls.normal, size: convertToKb(imageSizes[i][0].length), imageType: imageSizes[i][0].imageType
                     },
                     thumbnail: {
-                      url: urls.thumbnail, size: convertToKb(imageSizes[i][1])
+                      url: urls.thumbnail, size: convertToKb(imageSizes[i][1].length), imageType: imageSizes[i][1].imageType
                     }}
                 });
             const listHtml = listTemplate({images: combined});

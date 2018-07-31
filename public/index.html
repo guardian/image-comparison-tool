@@ -56,9 +56,9 @@
 
 <script id="imageList" type="text/x-handlebars-template">
 {{#each images}}
-    <p>File size: {{this.normal.size}}kb</p>
+    <p><b>File size:</b> {{this.normal.size}}kb <b>Type:</b> {{this.normal.imageType}}</p>
     <img width="620"  src="{{this.normal.url}}" />
-    <p>File size: {{this.thumbnail.size}}kb</p>
+    <p><b>File size:</b> {{this.thumbnail.size}}kb <b>Type:</b> {{this.thumbnail.imageType}}</p>
     <img width="140" src="{{this.thumbnail.url}}" />
     {{/each}}
 </script>
