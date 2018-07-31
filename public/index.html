@@ -12,26 +12,36 @@
 <label for="imageId-1">Media.guim urls or paths (newline separated)</label>
 <textarea class="materialize-textarea" rows="10" id="paths" name="imageIds" placeholder="Image ids (split with newline)"></textarea>
 
-<p>
+<div class="row">
+    <div class="col s6">
+        <p>
       <label>
-        <input class="with-gap" name="originHost" id="imgix-host" type="radio"  />
+        <input class="with-gap" name="originHost-left" id="imgix-host-left" type="radio"  />
         <span>ImgIx</span>
       </label>
  
     <label>
-        <input class="with-gap" name="originHost" type="radio"  />
+        <input class="with-gap" name="originHost-left" type="radio"  />
         <span>Fastly</span>
       </label>
-      </p>
-
-<div class="row">
-    <div class="col s6">
-        <input type="numeric" id="dpr-left" name="dpr-1" placeholder="DPR"/> 
-        <input type="numeric" id="quality-left" name="quality-1" placeholder="Quality"/> 
+</p>
+        DPR: <input type="numeric" id="dpr-left" name="dpr-1" placeholder="DPR"/> 
+        Quality: <input type="numeric" id="quality-left" name="quality-1" placeholder="Quality"/> 
     </div>
     <div class="col s6">
-        <input type="numeric" id="dpr-right" name="dpr-2" placeholder="DPR"/>
-        <input type="numeric" id="quality-right" name="quality-1" placeholder="Quality"/> </div>
+        <p>
+      <label>
+        <input class="with-gap" name="originHost-right" id="imgix-host-right" type="radio"  />
+        <span>ImgIx</span>
+      </label>
+ 
+    <label>
+        <input class="with-gap" name="originHost-right" type="radio"  />
+        <span>Fastly</span>
+      </label>
+</p>
+        DPR: <input type="numeric" id="dpr-right" name="dpr-2" placeholder="DPR"/>
+        Quality: <input type="numeric" id="quality-right" name="quality-1" placeholder="Quality"/> </div>
 </div>
 
 

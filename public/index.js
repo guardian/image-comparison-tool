@@ -4,20 +4,39 @@ function signImgIx(path) {
     return md5(`${mediaImgIxToken}${path}`);
 }
 
-const hostRadios = document.getElementsByName("originHost");
+const hostRadiosLeft = document.getElementsByName("originHost-left");
+const hostRadiosRight = document.getElementsByName("originHost-right");
+
+function switchOnHost(imgixValue, fastlyValue) {
+    return {
+        left: hostRadiosLeft[0].checked ? imgixValue : fastlyValue,
+        right:hostRadiosRight[0].checked ? imgixValue : fastlyValue
+    }
+}
+
 function getHost() {
-    const host = hostRadios[0].checked ? imgIxHost : fastlyHost;
-    console.log(host);
-    return host;
+    return switchOnHost(imgIxHost, fastlyHost)
+}
+
+function widthParam() {
+    return switchOnHost("w", "width");
+}
+
+function qualityParam() {
+    return switchOnHost("q", "quality");
+}
+
+function autoFormatValue() {
+    return switchOnHost("format", "webp")
 }
 
 function buildUrl(path, listId, params, width) {
     const dpr = params[`dpr-${listId}`];
     const quality = params[`quality-${listId}`];
-    const queryString = `?width=${width}&dpr=${dpr}&quality=${quality}&auto=webp`;
+    const queryString = `?${widthParam()[listId]}=${width}&dpr=${dpr}&${qualityParam()[listId]}=${quality}&auto=${autoFormatValue()}`;
     const combined = `${path}${queryString}`
     const imgIxHash = signImgIx(combined);
-    return `${getHost()}${path}${queryString}&s=${imgIxHash}`
+    return `${getHost()[listId]}${path}${queryString}&s=${imgIxHash}`
 }
 
 function convertToKb(sizeInBytes) {
@@ -43,13 +62,11 @@ function getParams() {
 getParams();
 
 function paramsToQuerySting() {
-    console.log("converting", params);
     const paramsString = Object.entries(params)
         .map((param) => param[0] == "paths" ? `paths=${param[1].join(",")}` : `${param[0]}=${param[1]}`)
         .join("&");
     console.log(paramsString);
     if (history.pushState) {
-        console.log("pushing state!")
         const newurl = window.location.origin + window.location.pathname + `?${paramsString}`;
         window.history.pushState({path:newurl},'',newurl);
     }
@@ -116,7 +133,8 @@ function updateImages() {
 }
 
 
-hostRadios.forEach((r) => r.addEventListener("input", (e) => updateImages()))
+hostRadiosLeft.forEach((r) => r.addEventListener("input", (e) => updateImages()))
+hostRadiosRight.forEach((r) => r.addEventListener("input", (e) => updateImages()))
 
 pathList.addEventListener("input", function(e){updateImages();})
 
