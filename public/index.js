@@ -191,7 +191,7 @@ function reloadImageLists(){
 }
 
 function updateImages() {
-    paths = pathList.innerHTML.replace(/https:\/\/media.guim.co.uk/g,"").split("\n");
+    paths = pathList.value.replace(/https:\/\/media.guim.co.uk/g,"").split("\n");
     params["paths"] = paths;
     paramsToQuerySting();
     reloadImageLists();
@@ -227,8 +227,8 @@ fetchWithTimeout("http://image-comparison-tool.s3-website-eu-west-1.amazonaws.co
 .then((resp) => {
     if (resp.status === 200) {
         resp.json().then((json) => {
-            imgIxHost = json.imgIxHost;
-            fastlyHost = json.fastlyHost;
+            imgIxHost = json.fastlyCodeHost;
+            fastlyHost = json.fastlyProdHost;
             mediaImgIxToken = json.mediaImgIxToken;
             getParams(configFromQueryString = false);
             updateImages();
