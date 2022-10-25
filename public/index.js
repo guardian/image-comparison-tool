@@ -88,7 +88,7 @@ function extractLengthAndType(response) {
     return {
         imageType: response.headers.get("content-type"),
         length: response.headers.get("content-length")
-        }
+    }
 }
 
 function updateList(listId, newParams) {
