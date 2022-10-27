@@ -1,4 +1,4 @@
-var paths, fastlyHost, imgIxHost, mediaImgIxToken;
+var paths, fastlyHost, mediaImgIxToken;
 
 function signImgIx(path) {
     return md5(`${mediaImgIxToken}${path}`);
@@ -13,55 +13,23 @@ function fetchWithTimeout(url, options, timeout) {
     ]);
 }
 
-const  isChrome = !!window.chrome && !!window.chrome.webstore;
+function autoParameter(autoSelected) {
+    return autoSelected == "none" ? "" : `&auto=avif,webp`;
+}
+
+const isChrome = !!window.chrome && !!window.chrome.webstore;
 const pathList = document.getElementById("paths");
-const hostRadiosLeft = document.getElementsByName("originHost-left");
-const hostRadiosRight = document.getElementsByName("originHost-right");
-const hostMapping = [
-    {
-        name: "host-left",
-        element: hostRadiosLeft
-    },
-    {
-        name: "host-right",
-        element: hostRadiosRight
-    }
-]
-
-function switchOnHost(imgixValue, fastlyValue) {
-    return {
-        left: hostRadiosLeft[0].checked ? imgixValue : fastlyValue,
-        right:hostRadiosRight[0].checked ? imgixValue : fastlyValue
-    }
-}
-
-function getHost() {
-    return switchOnHost(imgIxHost, fastlyHost)
-}
-
-function widthParam() {
-    return switchOnHost("w", "width");
-}
-
-function qualityParam() {
-    return switchOnHost("q", "quality");
-}
-
-function autoFormatValue() {
-    return switchOnHost("format", "webp");
-}
-
-function forceWebPParams() {
-    return isChrome ? "&fm=webp&format=webp" : "";
-}
 
 function buildUrl(path, listId, params, width) {
     const dpr = params[`dpr-${listId}`];
     const quality = params[`quality-${listId}`];
-    const queryString = `?${widthParam()[listId]}=${width}&dpr=${dpr}&${qualityParam()[listId]}=${quality}&auto=${autoFormatValue()[listId]}${forceWebPParams()}`;
+    const format = params[`format-${listId}`];
+    const auto = params[`auto-${listId}`];
+    const queryString = `?width=${width}&dpr=${dpr}&quality=${quality}&format=${format}${autoParameter(auto)}`;
     const combined = `${path}${queryString}`
     const imgIxHash = signImgIx(combined);
-    return `${getHost()[listId]}${path}${queryString}&s=${imgIxHash}`
+
+    return `${fastlyHost}${path}${queryString}&s=${imgIxHash}`
 }
 
 function convertToKb(sizeInBytes) {
@@ -72,22 +40,12 @@ function convertToKb(sizeInBytes) {
 
 var params = {}
 
-const elementsWithDirectParameterMapping = [ "dpr-left", "dpr-right", "quality-left", "quality-right"];
-
-function setHostRadioButton(buttonGroup, value) {
-    if (value === "imgix") {
-        buttonGroup[0].checked = true;
-        buttonGroup[1].checked = false;
-    } else {
-        buttonGroup[0].checked = false;
-        buttonGroup[1].checked = true;
-    }
-}
+const elementsWithDirectParameterMapping = [ "dpr-left", "dpr-right", "quality-left", "quality-right", "format-left", "format-right", "auto-left", "auto-right"];
 
 function arrayLookup(array, key, defaultValue) {
     const maybeItem = array.filter((element) => element[0] === key);
     return maybeItem.length > 0 ? maybeItem[0][1] : defaultValue;
-}
+}   
 
 
 
@@ -97,24 +55,20 @@ function getParams(configFromQueryString) {
         queryString.split("&")
         .map((keyPair) => keyPair.split("="))
         .map((param) => param[0] === "paths" ? ["paths", param[1].split(",")] : param);
+    
     paramsArray.forEach((param) => param[0] ? params[param[0]] = param[1] : "");
     paramsArray
         .filter((param) => elementsWithDirectParameterMapping.includes(param[0]))
         .forEach((param) => param[0] ? document.getElementById(param[0]).value = param[1] : undefined);
-    console.log("setting paths", params.paths.join("\n"))
+    
     pathList.innerHTML = params.paths ? params.paths.join("\n") : "";
     pathList.style.height = 'auto';
-    // set imgix/fastly radio buttons
-    hostMapping.forEach((host) => {
-        const value = arrayLookup(paramsArray, host.name, "imgix");
-        setHostRadioButton(host.element, value);
-        params[host.name] = value;
-    });
+
+    updateImages();
 
     if (configFromQueryString) {
-            // try using query string params
+        // try using query string params
         fastlyHost = arrayLookup(paramsArray, "fastly-host", "missing");
-        imgIxHost = arrayLookup(paramsArray, "imgix-host", "missing");
         mediaImgIxToken = arrayLookup(paramsArray, "imgix-token", "missing");
     }
 
@@ -135,7 +89,7 @@ function extractLengthAndType(response) {
     return {
         imageType: response.headers.get("content-type"),
         length: response.headers.get("content-length")
-        }
+    }
 }
 
 function updateList(listId, newParams) {
@@ -174,9 +128,9 @@ function updateList(listId, newParams) {
 
 console.log("Hello! I compare images.")
 
-function addListener(id, listId, paramName) {
+function addListener(eventType, id, listId, paramName) {
     const input = document.getElementById(id);
-    input.addEventListener("input", function(e){
+    input.addEventListener(eventType, function(e){
         const value = input.value;
         params[`${paramName}-${listId}`] = value;
         console.log(params);
@@ -184,6 +138,7 @@ function addListener(id, listId, paramName) {
         paramsToQuerySting();
     })
 }
+
 
 function reloadImageLists(){
     updateList("left", params);
@@ -197,38 +152,23 @@ function updateImages() {
     reloadImageLists();
 }
 
-function updateHost(name, index) {
-    if (index == 0) {
-        params[name] = "imgix"
-    } else if (index === 1) {
-        params[name] = "fastly"
-    }
-}
-
-hostMapping.forEach((host) => {
-    host.element.forEach((r, index) => r.addEventListener("input", (e) => {
-        updateHost(host.name, index);
-        updateImages();
-    }))
-})
-
-hostRadiosLeft.forEach((r, index) => r.addEventListener("input", (e) => updateImages()))
-hostRadiosRight.forEach((r, index) => r.addEventListener("input", (e) => updateImages()))
-
 pathList.addEventListener("input", function(e){updateImages();})
 
-addListener("dpr-left", "left", "dpr");
-addListener("quality-left", "left", "quality");
-addListener("dpr-right", "right", "dpr");
-addListener("quality-right", "right", "quality");
+addListener("input", "dpr-left", "left", "dpr");
+addListener("input", "dpr-right", "right", "dpr");
+addListener("input", "quality-left", "left", "quality");
+addListener("input", "quality-right", "right", "quality");
+addListener("input", "format-left", "left", "format");
+addListener("input", "format-right", "right", "format");
+addListener("change", "auto-left", "left", "auto");
+addListener("change", "auto-right", "right", "auto");
 
 
 fetchWithTimeout("http://image-comparison-tool.s3-website-eu-west-1.amazonaws.com/config.js", {}, timeout=1000)
 .then((resp) => {
     if (resp.status === 200) {
         resp.json().then((json) => {
-            imgIxHost = json.fastlyCodeHost;
-            fastlyHost = json.fastlyProdHost;
+            fastlyHost = json.fastlyProdHost.replace('http://','https://');
             mediaImgIxToken = json.mediaImgIxToken;
             getParams(configFromQueryString = false);
             updateImages();
@@ -237,7 +177,7 @@ fetchWithTimeout("http://image-comparison-tool.s3-website-eu-west-1.amazonaws.co
     } else {
         getParams(configFromQueryString = true);
         updateImages();
-        return Promise.reject("Failed to fetch config - try setting fastly-host,imgix-host and imgix-token in query string.")
+        return Promise.reject("Failed to fetch config - try setting fastly-host and imgix-token in query string.")
     }
 }).catch((err)=>console.log(err))
 
