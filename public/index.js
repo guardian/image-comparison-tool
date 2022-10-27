@@ -28,7 +28,7 @@ function buildUrl(path, listId, params, width) {
     const combined = `${path}${queryString}`
     const imgIxHash = signImgIx(combined);
 
-    return `https://i.guim.co.uk/img/media${path}${queryString}&s=${imgIxHash}`
+    return `${fastlyHost}${path}${queryString}&s=${imgIxHash}`
 }
 
 function convertToKb(sizeInBytes) {
@@ -164,8 +164,7 @@ fetchWithTimeout("http://image-comparison-tool.s3-website-eu-west-1.amazonaws.co
 .then((resp) => {
     if (resp.status === 200) {
         resp.json().then((json) => {
-            fastlyHost = json.fastlyProdHost;
-            console.log("FASTLY HOST: " + fastlyHost)
+            fastlyHost = json.fastlyProdHost.replace('http://','https://');
             mediaImgIxToken = json.mediaImgIxToken;
             getParams(configFromQueryString = false);
             updateImages();
