@@ -13,18 +13,19 @@ function fetchWithTimeout(url, options, timeout) {
     ]);
 }
 
+function autoParameter(autoSelected) {
+    return autoSelected == "none" ? "" : `&auto=avif,webp`;
+}
+
 const isChrome = !!window.chrome && !!window.chrome.webstore;
 const pathList = document.getElementById("paths");
-
-function forceWebPParams(format) {
-    return isChrome ? `&fm=${format}&format=${format}` : "";
-}
 
 function buildUrl(path, listId, params, width) {
     const dpr = params[`dpr-${listId}`];
     const quality = params[`quality-${listId}`];
     const format = params[`format-${listId}`];
-    const queryString = `?width=${width}&dpr=${dpr}&quality=${quality}&auto=${format}${forceWebPParams(format)}`;
+    const auto = params[`auto-${listId}`];
+    const queryString = `?width=${width}&dpr=${dpr}&quality=${quality}&format=${format}${autoParameter(auto)}`;
     const combined = `${path}${queryString}`
     const imgIxHash = signImgIx(combined);
 
@@ -39,7 +40,7 @@ function convertToKb(sizeInBytes) {
 
 var params = {}
 
-const elementsWithDirectParameterMapping = [ "dpr-left", "dpr-right", "quality-left", "quality-right", "format-left", "format-right"];
+const elementsWithDirectParameterMapping = [ "dpr-left", "dpr-right", "quality-left", "quality-right", "format-left", "format-right", "auto-left", "auto-right"];
 
 function arrayLookup(array, key, defaultValue) {
     const maybeItem = array.filter((element) => element[0] === key);
@@ -127,9 +128,9 @@ function updateList(listId, newParams) {
 
 console.log("Hello! I compare images.")
 
-function addListener(id, listId, paramName) {
+function addListener(eventType, id, listId, paramName) {
     const input = document.getElementById(id);
-    input.addEventListener("input", function(e){
+    input.addEventListener(eventType, function(e){
         const value = input.value;
         params[`${paramName}-${listId}`] = value;
         console.log(params);
@@ -137,6 +138,7 @@ function addListener(id, listId, paramName) {
         paramsToQuerySting();
     })
 }
+
 
 function reloadImageLists(){
     updateList("left", params);
@@ -152,12 +154,14 @@ function updateImages() {
 
 pathList.addEventListener("input", function(e){updateImages();})
 
-addListener("dpr-left", "left", "dpr");
-addListener("dpr-right", "right", "dpr");
-addListener("quality-left", "left", "quality");
-addListener("quality-right", "right", "quality");
-addListener("format-left", "left", "format");
-addListener("format-right", "right", "format");
+addListener("input", "dpr-left", "left", "dpr");
+addListener("input", "dpr-right", "right", "dpr");
+addListener("input", "quality-left", "left", "quality");
+addListener("input", "quality-right", "right", "quality");
+addListener("input", "format-left", "left", "format");
+addListener("input", "format-right", "right", "format");
+addListener("change", "auto-left", "left", "auto");
+addListener("change", "auto-right", "right", "auto");
 
 
 fetchWithTimeout("http://image-comparison-tool.s3-website-eu-west-1.amazonaws.com/config.js", {}, timeout=1000)

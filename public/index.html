@@ -6,11 +6,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
 </head>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const elems = document.querySelectorAll('select');
+    M.FormSelect.init(elems);
+  });
+
+</script>
+
 <body>
     <h1> Image Comparison Service</h1>
 
 <label for="imageId-1">Media.guim urls or paths (newline separated)</label>
 <textarea class="materialize-textarea" rows="10" id="paths" name="imageIds" placeholder="Image ids (split with newline)"></textarea>
+
 
 <div class="row">
     
@@ -18,18 +29,31 @@
         
         <div class="input-field col s2">
         <input type="text" id="dpr-left" name="dpr-1"/>
-        <label for="dpr-left">DPR</label>
+        <label for="dpr-left" class="active">DPR</label>
         </div>
         <div class="input-field col s2">
         <input type="text" id="quality-left" name="quality-1"/>
         <label for="quality-left">Quality</label>
         </div>
-        <div class="input-field col s2"> 
+        <div class="input-field col s2">
+        
         <input type="text" id="format-left" name="format-1" value="webp" maxlength="10" size="10"/>
          <label for="format-left">Format</label>
         </div>
 
+
+        <!-- https://developer.fastly.com/reference/io/auto/ -->
+        <div class="input-field col s2">
+         <select id="auto-left">
+                <option value="avif" selected>avif</option>
+                <option value="webp">webp</option>
+                <option value="none">none</option>
+            </select>
+        <label>Auto</label>
+      </div>
+
     </div>
+
     <div class="col s6">
 
         <div class="input-field col s2">
@@ -44,6 +68,16 @@
         <input type="text" id="format-right" name="format-2" value="avif" maxlength="10" size="10"/>
         <label for="format-right">Format</label>
         </div>
+
+        <div class="input-field col s2">
+         <select id="auto-right">
+                <option value="avif" selected>avif</option>
+                <option value="webp">webp</option>
+                <option value="none">none</option>
+            </select>
+        <label>Auto</label>
+      </div>
+
     </div>
 </div>
 
