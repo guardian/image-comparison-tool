@@ -1,4 +1,6 @@
-var paths, fastlyHost, mediaImgIxToken;
+var paths, mediaImgIxToken, salt;
+
+const basePath = "https://i.guim.co.uk/img/media"
 
 function signImgIx(path) {
     return md5(`${mediaImgIxToken}${path}`);
@@ -27,9 +29,9 @@ function buildUrl(path, listId, params, width) {
     const auto = params[`auto-${listId}`];
     const queryString = `?width=${width}&dpr=${dpr}&quality=${quality}&format=${format}${autoParameter(auto)}`;
     const combined = `${path}${queryString}`
-    const imgIxHash = signImgIx(combined);
+    const imgIxHash = salt ? salt : signImgIx(combined);
 
-    return `${fastlyHost}${path}${queryString}&s=${imgIxHash}`
+    return `${basePath}${path}${queryString}&s=${imgIxHash}`
 }
 
 function convertToKb(sizeInBytes) {
@@ -68,8 +70,8 @@ function getParams(configFromQueryString) {
 
     if (configFromQueryString) {
         // try using query string params
-        fastlyHost = arrayLookup(paramsArray, "fastly-host", "missing");
         mediaImgIxToken = arrayLookup(paramsArray, "imgix-token", "missing");
+        salt = arrayLookup(paramsArray, "salt", "missing");
     }
 
 }
@@ -168,7 +170,6 @@ fetchWithTimeout("http://image-comparison-tool.s3-website-eu-west-1.amazonaws.co
 .then((resp) => {
     if (resp.status === 200) {
         resp.json().then((json) => {
-            fastlyHost = json.fastlyProdHost.replace('http://','https://');
             mediaImgIxToken = json.mediaImgIxToken;
             getParams(configFromQueryString = false);
             updateImages();
@@ -177,7 +178,7 @@ fetchWithTimeout("http://image-comparison-tool.s3-website-eu-west-1.amazonaws.co
     } else {
         getParams(configFromQueryString = true);
         updateImages();
-        return Promise.reject("Failed to fetch config - try setting fastly-host and imgix-token in query string.")
+        return Promise.reject("Failed to fetch config - try setting salt= query string parameter to override the salt")
     }
 }).catch((err)=>console.log(err))
 

@@ -7,4 +7,6 @@ It's a static site using handlebars js and materialize css.
 
 To run it locally, you'll need to create a file called config.js with this line in it:
 
-`const imageHost = <your image host url>`
+`const mediaImgIxToken = salt for images from the fastly image vcl`
+
+Alternatively just set `salt=<override value for image salt urls>`
