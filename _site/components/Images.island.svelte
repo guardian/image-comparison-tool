@@ -1,0 +1,103 @@
+<script>
+  import Column from "./Column.svelte";
+
+  const IS_BROWSER = typeof document !== "undefined";
+
+  /** @type {string} */
+  let input =
+    (IS_BROWSER
+      ? new URLSearchParams(window.location.search)
+          .get("paths")
+          ?.replaceAll(",", "\n")
+      : undefined) ?? "";
+
+  $: urls = input
+    .split("\n")
+    .filter(Boolean)
+    .map((path) => new URL(path, "https://fastly-io-code.guim.co.uk"));
+
+  let width = 320;
+
+  let configs = (IS_BROWSER
+    ? JSON.parse(new URLSearchParams(window.location.search).get("configs"))
+    : undefined) ?? [
+    {
+      dpr: 1,
+      quality: 85,
+      format: "pjpg",
+    },
+    {
+      dpr: 1,
+      quality: 80,
+      format: "png8",
+    },
+    {
+      dpr: 2,
+      quality: 25,
+      format: "webp",
+    },
+    {
+      dpr: 2,
+      quality: 55,
+      format: "avif",
+    },
+  ];
+
+  const updateQueryParam = () => {
+    window.history.replaceState(
+      {},
+      "",
+      "?" +
+        new URLSearchParams({
+          configs: JSON.stringify(configs),
+          paths: input.replaceAll("\n", ","),
+        })
+    );
+    configs = configs;
+  };
+</script>
+
+<label>
+  Enter i.guim.co.uk URLs crops below, each on its own line:<br />
+  <textarea
+    cols="120"
+    rows="12"
+    bind:value={input}
+    on:input={updateQueryParam}
+  />
+</label>
+
+<hr />
+
+<label>
+  Width
+  <input type="number" max="1300" step="1" bind:value={width} />
+</label>
+
+<hr />
+
+<ul style:--count={urls.length + 2}>
+  {#each configs as config}
+    <Column {config} {width} {urls} {updateQueryParam} />
+  {/each}
+</ul>
+
+<style>
+  ul {
+    display: grid;
+    grid-template-rows: repeat(var(--count), auto);
+    grid-auto-flow: column;
+    grid-auto-columns: auto;
+    padding: 0;
+    gap: 36px;
+    overflow-x: scroll;
+  }
+
+  label {
+    display: block;
+  }
+
+  textarea {
+    max-width: 90vw;
+  }
+</style>
