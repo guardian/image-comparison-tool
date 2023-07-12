@@ -11,12 +11,15 @@
           ?.replaceAll(",", "\n")
       : undefined) ?? "";
 
+  let width =
+    (IS_BROWSER
+      ? Number(new URLSearchParams(window.location.search).get("width"))
+      : undefined) ?? 320;
+
   $: urls = input
     .split("\n")
     .filter(Boolean)
     .map((path) => new URL(path, "https://fastly-io-code.guim.co.uk"));
-
-  let width = 320;
 
   let configs = (IS_BROWSER
     ? JSON.parse(new URLSearchParams(window.location.search).get("configs"))
@@ -49,6 +52,7 @@
       "",
       "?" +
         new URLSearchParams({
+          width: String(width),
           configs: JSON.stringify(configs),
           paths: input.replaceAll("\n", ","),
         })
@@ -71,7 +75,17 @@
 
 <label>
   Width
-  <input type="number" max="1300" step="1" bind:value={width} />
+  <input
+    type="number"
+    max="1300"
+    step="10"
+    bind:value={width}
+    on:input={() => {
+      updateQueryParam();
+      // reload everything!
+      urls = urls;
+    }}
+  />
 </label>
 
 <hr />
