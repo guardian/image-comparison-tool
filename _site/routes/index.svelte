@@ -8,6 +8,7 @@
     name="description"
     content="Deploy small websites built with Svelte with islands of interactivity."
   />
+  <link rel="icon" href="/assets/favicon.svg" />
 </svelte:head>
 
 <body>
@@ -22,7 +23,8 @@
 <style>
   :global(:root) {
     color-scheme: dark;
-    font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+    font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo,
+      Consolas, "DejaVu Sans Mono", monospace;
   }
   body {
     background-color: #112;
