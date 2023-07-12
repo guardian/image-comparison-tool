@@ -4,26 +4,16 @@
   const IS_BROWSER = typeof document !== "undefined";
 
   /** @type {string} */
-  let input =
-    (IS_BROWSER
-      ? new URLSearchParams(window.location.search)
-          .get("paths")
-          ?.replaceAll(",", "\n")
-      : undefined) ?? "";
+  let input = "img/media/d9ede9177cd8a01c7a7e87da54fb15e0615adf20/0_1597_6000_3599/master/6000.jpg";
 
-  let width =
-    (IS_BROWSER
-      ? Number(new URLSearchParams(window.location.search).get("width"))
-      : undefined) ?? 320;
+  let width = (IS_BROWSER ? Number() : undefined) || 320;
 
   $: urls = input
     .split("\n")
     .filter(Boolean)
     .map((path) => new URL(path, "https://fastly-io-code.guim.co.uk"));
 
-  let configs = (IS_BROWSER
-    ? JSON.parse(new URLSearchParams(window.location.search).get("configs"))
-    : undefined) ?? [
+  let configs = [
     {
       dpr: 1,
       quality: 85,
@@ -59,6 +49,23 @@
     );
     configs = configs;
   };
+
+  const parseValues = () => {
+    if (!IS_BROWSER) return;
+    input =
+      new URLSearchParams(window.location.search)
+        .get("paths")
+        ?.replaceAll(",", "\n") ?? input;
+    width = Number(
+      new URLSearchParams(window.location.search).get("width") ?? width
+    );
+    configs = JSON.parse(
+      new URLSearchParams(window.location.search).get("configs") ??
+        JSON.stringify(configs)
+    );
+  };
+
+  parseValues();
 </script>
 
 <label>
