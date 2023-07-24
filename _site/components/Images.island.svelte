@@ -4,7 +4,8 @@
   const IS_BROWSER = typeof document !== "undefined";
 
   /** @type {string} */
-  let input = "img/media/d9ede9177cd8a01c7a7e87da54fb15e0615adf20/0_1597_6000_3599/master/6000.jpg";
+  let input =
+    "img/media/d9ede9177cd8a01c7a7e87da54fb15e0615adf20/0_1597_6000_3599/master/6000.jpg";
 
   let width = (IS_BROWSER ? Number() : undefined) || 320;
 
@@ -44,18 +45,17 @@
         new URLSearchParams({
           width: String(width),
           configs: JSON.stringify(configs),
-          paths: input.replaceAll("\n", ","),
+          paths: input.replaceAll("\n", "+"),
         })
     );
     configs = configs;
   };
 
   const parseValues = () => {
-    if (!IS_BROWSER) return;
     input =
       new URLSearchParams(window.location.search)
         .get("paths")
-        ?.replaceAll(",", "\n") ?? input;
+        ?.replaceAll("+", "\n") ?? input;
     width = Number(
       new URLSearchParams(window.location.search).get("width") ?? width
     );
@@ -65,7 +65,7 @@
     );
   };
 
-  parseValues();
+  IS_BROWSER && parseValues();
 </script>
 
 <label>
