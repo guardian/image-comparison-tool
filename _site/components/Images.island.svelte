@@ -5,22 +5,16 @@
 
   /** @type {string} */
   let input =
-    (IS_BROWSER
-      ? new URLSearchParams(window.location.search)
-          .get("paths")
-          ?.replaceAll(",", "\n")
-      : undefined) ?? "";
+    "img/media/d9ede9177cd8a01c7a7e87da54fb15e0615adf20/0_1597_6000_3599/master/6000.jpg";
+
+  let width = (IS_BROWSER ? Number() : undefined) || 320;
 
   $: urls = input
     .split("\n")
     .filter(Boolean)
     .map((path) => new URL(path, "https://fastly-io-code.guim.co.uk"));
 
-  let width = 320;
-
-  let configs = (IS_BROWSER
-    ? JSON.parse(new URLSearchParams(window.location.search).get("configs"))
-    : undefined) ?? [
+  let configs = [
     {
       dpr: 1,
       quality: 85,
@@ -49,12 +43,29 @@
       "",
       "?" +
         new URLSearchParams({
+          width: String(width),
           configs: JSON.stringify(configs),
-          paths: input.replaceAll("\n", ","),
+          paths: input.replaceAll("\n", "+"),
         })
     );
     configs = configs;
   };
+
+  const parseValues = () => {
+    input =
+      new URLSearchParams(window.location.search)
+        .get("paths")
+        ?.replaceAll("+", "\n") ?? input;
+    width = Number(
+      new URLSearchParams(window.location.search).get("width") ?? width
+    );
+    configs = JSON.parse(
+      new URLSearchParams(window.location.search).get("configs") ??
+        JSON.stringify(configs)
+    );
+  };
+
+  IS_BROWSER && parseValues();
 </script>
 
 <label>
@@ -71,7 +82,17 @@
 
 <label>
   Width
-  <input type="number" max="1300" step="1" bind:value={width} />
+  <input
+    type="number"
+    max="1300"
+    step="10"
+    bind:value={width}
+    on:input={() => {
+      updateQueryParam();
+      // reload everything!
+      urls = urls;
+    }}
+  />
 </label>
 
 <hr />

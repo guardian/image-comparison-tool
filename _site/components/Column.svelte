@@ -15,7 +15,7 @@
   const ratio = (src) => {
     const [, , , , crop] = src.pathname.split("/");
     if (!crop) return 1;
-    const [width, height] = crop.split("_").slice(2);
+    const [width, height] = crop.split("_").slice(2).map(Number);
     return height / width;
   };
 
