@@ -14,6 +14,7 @@
     .filter(Boolean)
     .map((path) => new URL(path, "https://fastly-io-code.guim.co.uk"));
 
+  /** @type {Config} */
   let configs = [
     {
       dpr: 1,
@@ -28,7 +29,7 @@
     {
       dpr: 2,
       quality: 25,
-      format: "webp",
+      format: "webply",
     },
     {
       dpr: 2,

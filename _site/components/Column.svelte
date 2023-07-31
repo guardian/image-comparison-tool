@@ -1,5 +1,5 @@
 <script>
-  /** @type {{ format: 'avif' | 'webp' | 'png8' | 'pjpg', dpr: 1 | 2, quality: number }} */
+  /** @type {Config} */
   export let config;
 
   /** @type {number} */
@@ -28,6 +28,13 @@
       };
       reader.readAsDataURL(blob);
     });
+
+  const formats = /** @type {const} @satisfies {Config.format[]}*/ ([
+    "avif",
+    "webply",
+    "png8",
+    "pjpg",
+  ]);
 
   const format_size = (size) => `${(size / 1000).toFixed(1)} kB`;
 
@@ -96,7 +103,7 @@
     Format
 
     <select bind:value={config.format} on:change={handleChange}>
-      {#each ["avif", "webp", "png8", "pjpg"] as image_format}
+      {#each formats as image_format}
         <option value={image_format} selected={image_format === config.format}>
           {image_format}
         </option>
