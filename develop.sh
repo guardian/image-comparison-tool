@@ -1,2 +1,3 @@
 # develop project
-deno run -A https://deno.land/x/mononykus@0.7.2/src/build.ts --watch
+dvm use
+deno run -A jsr:@mxdvl/mononykus@0.7.5 --watch
