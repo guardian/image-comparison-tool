@@ -31,6 +31,7 @@
 
   const formats = /** @type {const} @satisfies {Config.format[]}*/ ([
     "avif",
+    "jxl",
     "webply",
     "png8",
     "pjpg",
@@ -53,6 +54,7 @@
         // TODO: get headers from actual browsing session!
         Accept: [
           "image/avif",
+          "image/jxl",
           "image/webp",
           "image/png",
           "image/svg+xml",

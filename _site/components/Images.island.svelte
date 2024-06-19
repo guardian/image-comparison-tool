@@ -36,6 +36,11 @@
       quality: 55,
       format: "avif",
     },
+    {
+      dpr: 2,
+      quality: 55,
+      format: "jxl",
+    },
   ];
 
   const updateQueryParam = () => {
