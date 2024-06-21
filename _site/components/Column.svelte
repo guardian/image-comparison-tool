@@ -31,7 +31,7 @@
 
   const formats = /** @type {const} @satisfies {Config.format[]}*/ ([
     "avif",
-    "jxl",
+    "pjxl",
     "webply",
     "png8",
     "pjpg",
