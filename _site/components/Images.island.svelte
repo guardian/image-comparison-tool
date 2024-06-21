@@ -39,7 +39,7 @@
     {
       dpr: 2,
       quality: 55,
-      format: "jxl",
+      format: "pjxl",
     },
   ];
 
