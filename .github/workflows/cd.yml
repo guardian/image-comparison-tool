@@ -3,20 +3,18 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Deno
+name: Continuous Deployment
 
 on:
+  workflow_dispatch:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
-
-permissions:
-  contents: read
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Setup repo
@@ -30,3 +28,24 @@ jobs:
 
       - name: Run build
         run: deno run -A jsr:@mxdvl/mononykus@0.7.5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+
+  deploy:
+    needs: build
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
