@@ -1,12 +1,30 @@
-Image comparison tool
-=====================
+# Image comparison tool
 
 This tool makes it easy to compare different DPR/Quality parameters of images. The guardian will use this to work out what values to set for these parameters to get the optimum size/quality ratio.
 
-It's a static site using handlebars js and materialize css.
+The project is a static site built using Svelte and SvelteKit
 
-To run it locally, you'll need to create a file called config.js with this line in it:
+## Developing
 
-`const mediaImgIxToken = salt for images from the fastly image vcl`
+Once you've created a project and installed dependencies with `npm install`, start a development server:
 
-Alternatively just set `salt=<override value for image salt urls>`
+```sh
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+
+## Building
+
+To create a production version of the app:
+
+```sh
+npm run build
+```
+
+You can preview the production build with `npm run preview`.
+
+## Deploying
+
+This site is deployed using GitHub Actions.

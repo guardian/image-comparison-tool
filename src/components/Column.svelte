@@ -29,7 +29,7 @@
       reader.readAsDataURL(blob);
     });
 
-  const formats = /** @type {const} @satisfies {Config.format[]}*/ ([
+  const formats = /** @type {const} @satisfies {Config["format"][]}*/ ([
     "avif",
     "pjxl",
     "webply",
@@ -44,7 +44,7 @@
       format: config.format,
       dpr: String(config.dpr),
       quality: String(config.quality),
-      width,
+      width: String(width),
       s: "none",
     });
     const src = new URL(`${url.href}?${searchParams}`);

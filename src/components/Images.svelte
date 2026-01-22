@@ -5,7 +5,7 @@
 
   /** @type {string} */
   let input =
-    "img/media/d9ede9177cd8a01c7a7e87da54fb15e0615adf20/0_1597_6000_3599/master/6000.jpg";
+    "https://i.guim.co.uk/img/media/d9ede9177cd8a01c7a7e87da54fb15e0615adf20/0_1597_6000_3599/master/6000.jpg";
 
   let width = (IS_BROWSER ? Number() : undefined) || 320;
 
@@ -14,7 +14,7 @@
     .filter(Boolean)
     .map((path) => new URL(path, "https://fastly-io-code.guim.co.uk"));
 
-  /** @type {Config} */
+  /** @type {Config[]} */
   let configs = [
     {
       dpr: 1,
@@ -81,7 +81,7 @@
     rows="12"
     bind:value={input}
     on:input={updateQueryParam}
-  />
+  ></textarea>
 </label>
 
 <hr />

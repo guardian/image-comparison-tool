@@ -20,16 +20,19 @@ jobs:
       - name: Setup repo
         uses: actions/checkout@v4
 
-      - name: Setup Deno
-        # uses: denoland/setup-deno@v1
-        uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31  # v1.1.2
+      - name: Install Node
+        uses: actions/setup-node@v4
         with:
-          deno-version: v1.x
+          node-version: 24
+          cache: "npm"
 
+      - name: Install dependencies
+        run: npm install
       - name: Run build
-        run: deno run -A jsr:@mxdvl/mononykus@0.7.5
+        run: npm run build
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: Upload artifact for deployment job
+        uses: actions/upload-pages-artifact@v3
         with:
           path: build
 
